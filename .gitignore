@@ -1,0 +1,28 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.env
+
+# Local Databases (Contains private patient history records)
+database/database.db
+database/*.db
+
+# IDE Files
+.vscode/
+.idea/
+.project
+.pydevproject
+
+# OS Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini

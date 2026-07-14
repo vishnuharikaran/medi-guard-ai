@@ -1,0 +1,395 @@
+{
+    "diabetes": {
+        "best_model": "Naive Bayes",
+        "metrics": {
+            "Logistic Regression": {
+                "Accuracy": 0.885,
+                "Precision": 0.8,
+                "Recall": 0.34726688102893893,
+                "F1 Score": 0.484304932735426,
+                "ROC AUC": 0.8410616072601418,
+                "ConfusionMatrix": {
+                    "TN": 1662,
+                    "FP": 27,
+                    "FN": 203,
+                    "TP": 108
+                },
+                "TrainingTimeSec": 0.046567440032958984
+            },
+            "Decision Tree": {
+                "Accuracy": 0.8735,
+                "Precision": 0.7071428571428572,
+                "Recall": 0.3183279742765273,
+                "F1 Score": 0.43902439024390244,
+                "ROC AUC": 0.795935112578268,
+                "ConfusionMatrix": {
+                    "TN": 1648,
+                    "FP": 41,
+                    "FN": 212,
+                    "TP": 99
+                },
+                "TrainingTimeSec": 0.05373096466064453
+            },
+            "Random Forest": {
+                "Accuracy": 0.877,
+                "Precision": 0.7876106194690266,
+                "Recall": 0.2861736334405145,
+                "F1 Score": 0.419811320754717,
+                "ROC AUC": 0.8341452827925732,
+                "ConfusionMatrix": {
+                    "TN": 1665,
+                    "FP": 24,
+                    "FN": 222,
+                    "TP": 89
+                },
+                "TrainingTimeSec": 0.6006431579589844
+            },
+            "Gradient Boosting": {
+                "Accuracy": 0.8825,
+                "Precision": 0.7878787878787878,
+                "Recall": 0.33440514469453375,
+                "F1 Score": 0.46952595936794583,
+                "ROC AUC": 0.8267615876515145,
+                "ConfusionMatrix": {
+                    "TN": 1661,
+                    "FP": 28,
+                    "FN": 207,
+                    "TP": 104
+                },
+                "TrainingTimeSec": 2.7226402759552
+            },
+            "XGBoost": {
+                "Accuracy": 0.877,
+                "Precision": 0.7070063694267515,
+                "Recall": 0.35691318327974275,
+                "F1 Score": 0.47435897435897434,
+                "ROC AUC": 0.8111137129030477,
+                "ConfusionMatrix": {
+                    "TN": 1643,
+                    "FP": 46,
+                    "FN": 200,
+                    "TP": 111
+                },
+                "TrainingTimeSec": 0.2846639156341553
+            },
+            "LightGBM": {
+                "Accuracy": 0.885,
+                "Precision": 0.8091603053435115,
+                "Recall": 0.3408360128617363,
+                "F1 Score": 0.4796380090497738,
+                "ROC AUC": 0.8221250040454692,
+                "ConfusionMatrix": {
+                    "TN": 1664,
+                    "FP": 25,
+                    "FN": 205,
+                    "TP": 106
+                },
+                "TrainingTimeSec": 0.22158432006835938
+            },
+            "Support Vector Machine": {
+                "Accuracy": 0.879,
+                "Precision": 0.8349514563106796,
+                "Recall": 0.2765273311897106,
+                "F1 Score": 0.41545893719806765,
+                "ROC AUC": 0.7272459017017623,
+                "ConfusionMatrix": {
+                    "TN": 1672,
+                    "FP": 17,
+                    "FN": 225,
+                    "TP": 86
+                },
+                "TrainingTimeSec": 11.040241003036499
+            },
+            "KNN": {
+                "Accuracy": 0.8735,
+                "Precision": 0.75,
+                "Recall": 0.2797427652733119,
+                "F1 Score": 0.40749414519906324,
+                "ROC AUC": 0.7851722608366221,
+                "ConfusionMatrix": {
+                    "TN": 1660,
+                    "FP": 29,
+                    "FN": 224,
+                    "TP": 87
+                },
+                "TrainingTimeSec": 0.03580212593078613
+            },
+            "Naive Bayes": {
+                "Accuracy": 0.8355,
+                "Precision": 0.4763157894736842,
+                "Recall": 0.5819935691318328,
+                "F1 Score": 0.5238784370477568,
+                "ROC AUC": 0.8204497038716567,
+                "ConfusionMatrix": {
+                    "TN": 1490,
+                    "FP": 199,
+                    "FN": 130,
+                    "TP": 181
+                },
+                "TrainingTimeSec": 0.0044939517974853516
+            }
+        }
+    },
+    "heart_disease": {
+        "best_model": "Naive Bayes",
+        "metrics": {
+            "Logistic Regression": {
+                "Accuracy": 0.8045,
+                "Precision": 0.6692307692307692,
+                "Recall": 0.49904397705544934,
+                "F1 Score": 0.5717415115005476,
+                "ROC AUC": 0.8344727504333496,
+                "ConfusionMatrix": {
+                    "TN": 1348,
+                    "FP": 129,
+                    "FN": 262,
+                    "TP": 261
+                },
+                "TrainingTimeSec": 0.028069257736206055
+            },
+            "Decision Tree": {
+                "Accuracy": 0.7665,
+                "Precision": 0.5564516129032258,
+                "Recall": 0.5277246653919694,
+                "F1 Score": 0.5417075564278705,
+                "ROC AUC": 0.78158597539584,
+                "ConfusionMatrix": {
+                    "TN": 1257,
+                    "FP": 220,
+                    "FN": 247,
+                    "TP": 276
+                },
+                "TrainingTimeSec": 0.04135537147521973
+            },
+            "Random Forest": {
+                "Accuracy": 0.797,
+                "Precision": 0.6611570247933884,
+                "Recall": 0.4588910133843212,
+                "F1 Score": 0.5417607223476298,
+                "ROC AUC": 0.8244037640247983,
+                "ConfusionMatrix": {
+                    "TN": 1354,
+                    "FP": 123,
+                    "FN": 283,
+                    "TP": 240
+                },
+                "TrainingTimeSec": 0.38129353523254395
+            },
+            "Gradient Boosting": {
+                "Accuracy": 0.798,
+                "Precision": 0.6521739130434783,
+                "Recall": 0.4875717017208413,
+                "F1 Score": 0.5579868708971554,
+                "ROC AUC": 0.8261682315582074,
+                "ConfusionMatrix": {
+                    "TN": 1341,
+                    "FP": 136,
+                    "FN": 268,
+                    "TP": 255
+                },
+                "TrainingTimeSec": 1.913304090499878
+            },
+            "XGBoost": {
+                "Accuracy": 0.793,
+                "Precision": 0.6345679012345679,
+                "Recall": 0.491395793499044,
+                "F1 Score": 0.5538793103448276,
+                "ROC AUC": 0.8222496378504823,
+                "ConfusionMatrix": {
+                    "TN": 1329,
+                    "FP": 148,
+                    "FN": 266,
+                    "TP": 257
+                },
+                "TrainingTimeSec": 0.06124305725097656
+            },
+            "LightGBM": {
+                "Accuracy": 0.799,
+                "Precision": 0.6539440203562341,
+                "Recall": 0.491395793499044,
+                "F1 Score": 0.5611353711790393,
+                "ROC AUC": 0.82588860941058,
+                "ConfusionMatrix": {
+                    "TN": 1341,
+                    "FP": 136,
+                    "FN": 266,
+                    "TP": 257
+                },
+                "TrainingTimeSec": 0.04228806495666504
+            },
+            "Support Vector Machine": {
+                "Accuracy": 0.7975,
+                "Precision": 0.6832298136645962,
+                "Recall": 0.42065009560229444,
+                "F1 Score": 0.5207100591715976,
+                "ROC AUC": 0.7888192566452333,
+                "ConfusionMatrix": {
+                    "TN": 1375,
+                    "FP": 102,
+                    "FN": 303,
+                    "TP": 220
+                },
+                "TrainingTimeSec": 7.908811330795288
+            },
+            "KNN": {
+                "Accuracy": 0.784,
+                "Precision": 0.6206896551724138,
+                "Recall": 0.4474187380497132,
+                "F1 Score": 0.52,
+                "ROC AUC": 0.7937217060575736,
+                "ConfusionMatrix": {
+                    "TN": 1334,
+                    "FP": 143,
+                    "FN": 289,
+                    "TP": 234
+                },
+                "TrainingTimeSec": 0.016785144805908203
+            },
+            "Naive Bayes": {
+                "Accuracy": 0.7625,
+                "Precision": 0.5368098159509203,
+                "Recall": 0.6692160611854685,
+                "F1 Score": 0.5957446808510638,
+                "ROC AUC": 0.8201654172130732,
+                "ConfusionMatrix": {
+                    "TN": 1175,
+                    "FP": 302,
+                    "FN": 173,
+                    "TP": 350
+                },
+                "TrainingTimeSec": 0.0034453868865966797
+            }
+        }
+    },
+    "hypertension": {
+        "best_model": "Logistic Regression",
+        "metrics": {
+            "Logistic Regression": {
+                "Accuracy": 0.787,
+                "Precision": 0.7242472266244057,
+                "Recall": 0.6445698166431594,
+                "F1 Score": 0.682089552238806,
+                "ROC AUC": 0.849029682547833,
+                "ConfusionMatrix": {
+                    "TN": 1117,
+                    "FP": 174,
+                    "FN": 252,
+                    "TP": 457
+                },
+                "TrainingTimeSec": 0.016243457794189453
+            },
+            "Decision Tree": {
+                "Accuracy": 0.762,
+                "Precision": 0.6900489396411092,
+                "Recall": 0.5966149506346967,
+                "F1 Score": 0.6399394856278366,
+                "ROC AUC": 0.8096969471845334,
+                "ConfusionMatrix": {
+                    "TN": 1101,
+                    "FP": 190,
+                    "FN": 286,
+                    "TP": 423
+                },
+                "TrainingTimeSec": 0.035605669021606445
+            },
+            "Random Forest": {
+                "Accuracy": 0.7825,
+                "Precision": 0.7245901639344262,
+                "Recall": 0.6234132581100141,
+                "F1 Score": 0.6702047005307051,
+                "ROC AUC": 0.8419152229987578,
+                "ConfusionMatrix": {
+                    "TN": 1123,
+                    "FP": 168,
+                    "FN": 267,
+                    "TP": 442
+                },
+                "TrainingTimeSec": 0.2240002155303955
+            },
+            "Gradient Boosting": {
+                "Accuracy": 0.778,
+                "Precision": 0.7140549273021002,
+                "Recall": 0.6234132581100141,
+                "F1 Score": 0.6656626506024096,
+                "ROC AUC": 0.8434840749509188,
+                "ConfusionMatrix": {
+                    "TN": 1114,
+                    "FP": 177,
+                    "FN": 267,
+                    "TP": 442
+                },
+                "TrainingTimeSec": 1.9687902927398682
+            },
+            "XGBoost": {
+                "Accuracy": 0.7765,
+                "Precision": 0.7112903225806452,
+                "Recall": 0.6220028208744711,
+                "F1 Score": 0.6636568848758465,
+                "ROC AUC": 0.8362953243623261,
+                "ConfusionMatrix": {
+                    "TN": 1112,
+                    "FP": 179,
+                    "FN": 268,
+                    "TP": 441
+                },
+                "TrainingTimeSec": 0.06107640266418457
+            },
+            "LightGBM": {
+                "Accuracy": 0.784,
+                "Precision": 0.7252032520325203,
+                "Recall": 0.6290550070521862,
+                "F1 Score": 0.6737160120845922,
+                "ROC AUC": 0.8458624807307618,
+                "ConfusionMatrix": {
+                    "TN": 1122,
+                    "FP": 169,
+                    "FN": 263,
+                    "TP": 446
+                },
+                "TrainingTimeSec": 0.04175400733947754
+            },
+            "Support Vector Machine": {
+                "Accuracy": 0.783,
+                "Precision": 0.7383015597920277,
+                "Recall": 0.6008462623413258,
+                "F1 Score": 0.6625194401244168,
+                "ROC AUC": 0.8241050387897553,
+                "ConfusionMatrix": {
+                    "TN": 1140,
+                    "FP": 151,
+                    "FN": 283,
+                    "TP": 426
+                },
+                "TrainingTimeSec": 7.946448087692261
+            },
+            "KNN": {
+                "Accuracy": 0.761,
+                "Precision": 0.6884176182707994,
+                "Recall": 0.5952045133991537,
+                "F1 Score": 0.6384266263237519,
+                "ROC AUC": 0.8174554444953072,
+                "ConfusionMatrix": {
+                    "TN": 1100,
+                    "FP": 191,
+                    "FN": 287,
+                    "TP": 422
+                },
+                "TrainingTimeSec": 0.016047239303588867
+            },
+            "Naive Bayes": {
+                "Accuracy": 0.7635,
+                "Precision": 0.6573333333333333,
+                "Recall": 0.6953455571227081,
+                "F1 Score": 0.6758053461274846,
+                "ROC AUC": 0.8385972540720776,
+                "ConfusionMatrix": {
+                    "TN": 1034,
+                    "FP": 257,
+                    "FN": 216,
+                    "TP": 493
+                },
+                "TrainingTimeSec": 0.0040318965911865234
+            }
+        }
+    }
+}
