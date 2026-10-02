@@ -1,0 +1,92 @@
+{
+  "dataset_name": "heart_disease",
+  "features": [
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "target": "target",
+  "best_model": "Random Forest",
+  "test_split_size": 61,
+  "metrics": {
+    "accuracy": 0.9016,
+    "precision": 0.8438,
+    "recall": 0.9643,
+    "f1": 0.9,
+    "roc_auc": 0.9589,
+    "sensitivity": 0.9643,
+    "specificity": 0.8485,
+    "confusion_matrix": [
+      [
+        28,
+        5
+      ],
+      [
+        1,
+        27
+      ]
+    ],
+    "tp": 27,
+    "tn": 28,
+    "fp": 5,
+    "fn": 1
+  },
+  "all_metrics": {
+    "Random Forest": {
+      "accuracy": 0.9016,
+      "precision": 0.8438,
+      "recall": 0.9643,
+      "f1": 0.9,
+      "roc_auc": 0.9589,
+      "sensitivity": 0.9643,
+      "specificity": 0.8485,
+      "confusion_matrix": [
+        [
+          28,
+          5
+        ],
+        [
+          1,
+          27
+        ]
+      ],
+      "tp": 27,
+      "tn": 28,
+      "fp": 5,
+      "fn": 1
+    },
+    "Logistic Regression": {
+      "accuracy": 0.8689,
+      "precision": 0.8125,
+      "recall": 0.9286,
+      "f1": 0.8667,
+      "roc_auc": 0.9502,
+      "sensitivity": 0.9286,
+      "specificity": 0.8182,
+      "confusion_matrix": [
+        [
+          27,
+          6
+        ],
+        [
+          2,
+          26
+        ]
+      ],
+      "tp": 26,
+      "tn": 27,
+      "fp": 6,
+      "fn": 2
+    }
+  }
+}

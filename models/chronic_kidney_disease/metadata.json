@@ -1,0 +1,103 @@
+{
+  "dataset_name": "chronic_kidney_disease",
+  "features": [
+    "age",
+    "bp",
+    "sg",
+    "al",
+    "su",
+    "rbc",
+    "pc",
+    "pcc",
+    "ba",
+    "bgr",
+    "bu",
+    "sc",
+    "sod",
+    "pot",
+    "hemo",
+    "pcv",
+    "wbcc",
+    "rbcc",
+    "htn",
+    "dm",
+    "cad",
+    "appet",
+    "pe",
+    "ane"
+  ],
+  "target": "target",
+  "best_model": "Random Forest",
+  "test_split_size": 80,
+  "metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "roc_auc": 1.0,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "confusion_matrix": [
+      [
+        30,
+        0
+      ],
+      [
+        0,
+        50
+      ]
+    ],
+    "tp": 50,
+    "tn": 30,
+    "fp": 0,
+    "fn": 0
+  },
+  "all_metrics": {
+    "Random Forest": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "confusion_matrix": [
+        [
+          30,
+          0
+        ],
+        [
+          0,
+          50
+        ]
+      ],
+      "tp": 50,
+      "tn": 30,
+      "fp": 0,
+      "fn": 0
+    },
+    "Logistic Regression": {
+      "accuracy": 0.975,
+      "precision": 1.0,
+      "recall": 0.96,
+      "f1": 0.9796,
+      "roc_auc": 1.0,
+      "sensitivity": 0.96,
+      "specificity": 1.0,
+      "confusion_matrix": [
+        [
+          30,
+          0
+        ],
+        [
+          2,
+          48
+        ]
+      ],
+      "tp": 48,
+      "tn": 30,
+      "fp": 0,
+      "fn": 2
+    }
+  }
+}

@@ -1,9 +1,8 @@
-"""Generate data, train disease risk models, and save the best pipelines."""
+"""Generate data, fetch UCI datasets, train disease risk models, and save the best pipelines."""
 
 from __future__ import annotations
 
 from pathlib import Path
-
 import joblib
 import numpy as np
 import pandas as pd
@@ -17,6 +16,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 ROOT = Path(__file__).resolve().parent
 DATASET_PATH = ROOT / "datasets" / "healthcare_dataset.csv"
+CDC_DATASET_PATH = ROOT / "datasets" / "cdc_diabetes_health_indicators.csv"
 MODEL_PATH = ROOT / "models" / "risk_prediction_model.pkl"
 RANDOM_STATE = 42
 
@@ -38,6 +38,13 @@ FEATURES = [
     "Water Intake",
 ]
 
+CDC_FEATURES = [
+    'HighBP', 'HighChol', 'CholCheck', 'BMI', 'Smoker', 'Stroke',
+    'HeartDiseaseorAttack', 'PhysActivity', 'Fruits', 'Veggies',
+    'HvyAlcoholConsump', 'AnyHealthcare', 'NoDocbcCost', 'GenHlth',
+    'MentHlth', 'PhysHlth', 'DiffWalk', 'Sex', 'Age', 'Education', 'Income'
+]
+
 TARGETS = {
     "Diabetes": "Diabetes Risk",
     "Heart Disease": "Heart Disease Risk",
@@ -49,6 +56,31 @@ TARGETS = {
 
 def sigmoid(x: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-x))
+
+
+def fetch_and_save_cdc_dataset() -> pd.DataFrame:
+    """
+    Fetches CDC Diabetes Health Indicators dataset from UCI ML Repository (ID=891)
+    and caches it locally as a CSV.
+    """
+    CDC_DATASET_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if CDC_DATASET_PATH.exists():
+        print(f"Loading existing CDC dataset from: {CDC_DATASET_PATH}")
+        return pd.read_csv(CDC_DATASET_PATH)
+
+    print("Fetching CDC Diabetes Health Indicators dataset from UCI Repository (id=891)...")
+    try:
+        from ucimlrepo import fetch_ucirepo
+        cdc_data = fetch_ucirepo(id=891)
+        X = cdc_data.data.features
+        y = cdc_data.data.targets
+        df = pd.concat([X, y], axis=1)
+        df.to_csv(CDC_DATASET_PATH, index=False)
+        print(f"CDC Diabetes dataset saved ({df.shape[0]} rows, {df.shape[1]} cols) to: {CDC_DATASET_PATH}")
+        return df
+    except Exception as e:
+        print(f"Warning: Could not fetch CDC UCI dataset dynamically: {e}")
+        return pd.DataFrame()
 
 
 def generate_synthetic_dataset(rows: int = 5000) -> pd.DataFrame:
@@ -158,29 +190,43 @@ def train() -> dict:
     DATASET_PATH.parent.mkdir(parents=True, exist_ok=True)
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
 
+    # Fetch CDC Diabetes dataset from UCI repository
+    cdc_df = fetch_and_save_cdc_dataset()
+
     if DATASET_PATH.exists():
         df = pd.read_csv(DATASET_PATH)
     else:
         df = generate_synthetic_dataset()
         df.to_csv(DATASET_PATH, index=False)
 
-    X = df[FEATURES]
     trained_models = {}
     metrics = {}
 
     for disease, target in TARGETS.items():
-        y = df[target]
+        # Train Diabetes on CDC dataset if available
+        if disease == "Diabetes" and not cdc_df.empty and "Diabetes_binary" in cdc_df.columns:
+            print("Training Diabetes Classifier on CDC Diabetes Health Indicators dataset (253,680 records)...")
+            X_curr = cdc_df[CDC_FEATURES]
+            y_curr = cdc_df["Diabetes_binary"]
+            is_cdc = True
+        else:
+            X_curr = df[FEATURES]
+            y_curr = df[target]
+            is_cdc = False
+
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=RANDOM_STATE, stratify=y
+            X_curr, y_curr, test_size=0.2, random_state=RANDOM_STATE, stratify=y_curr
         )
+
         candidates = {
+            "Logistic Regression": LogisticRegression(max_iter=1500, class_weight="balanced"),
             "Random Forest": RandomForestClassifier(
-                n_estimators=220,
-                max_depth=10,
+                n_estimators=100 if is_cdc else 220,
+                max_depth=12 if is_cdc else 10,
                 class_weight="balanced",
                 random_state=RANDOM_STATE,
+                n_jobs=-1
             ),
-            "Logistic Regression": LogisticRegression(max_iter=1500, class_weight="balanced"),
         }
         disease_metrics = {}
         best_name = ""
@@ -188,17 +234,22 @@ def train() -> dict:
         best_f1 = -1.0
 
         for name, estimator in candidates.items():
-            pipeline = Pipeline(
-                steps=[
-                    ("preprocess", build_preprocessor()),
-                    ("model", estimator),
-                ]
-            )
+            if is_cdc:
+                pipeline = Pipeline(steps=[("model", estimator)])
+            else:
+                pipeline = Pipeline(
+                    steps=[
+                        ("preprocess", build_preprocessor()),
+                        ("model", estimator),
+                    ]
+                )
+
             pipeline.fit(X_train, y_train)
             predictions = pipeline.predict(X_test)
             probs = pipeline.predict_proba(X_test)[:, 1] if hasattr(pipeline, "predict_proba") else None
             candidate_metrics = evaluate(y_test, predictions, probs)
             disease_metrics[name] = candidate_metrics
+
             if candidate_metrics["f1"] > best_f1:
                 best_f1 = candidate_metrics["f1"]
                 best_name = name
@@ -207,6 +258,7 @@ def train() -> dict:
         trained_models[disease] = best_pipeline
         metrics[disease] = {
             "best_model": best_name,
+            "is_cdc_dataset": is_cdc,
             "comparison": disease_metrics,
         }
 
@@ -214,8 +266,11 @@ def train() -> dict:
         "models": trained_models,
         "metrics": metrics,
         "features": FEATURES,
+        "cdc_features": CDC_FEATURES,
         "targets": TARGETS,
         "dataset_path": str(DATASET_PATH),
+        "cdc_dataset_path": str(CDC_DATASET_PATH) if not cdc_df.empty else None,
+        "cdc_records_count": cdc_df.shape[0] if not cdc_df.empty else 0,
     }
     joblib.dump(bundle, MODEL_PATH)
     return bundle
@@ -224,9 +279,10 @@ def train() -> dict:
 if __name__ == "__main__":
     result = train()
     print(f"Dataset saved to: {DATASET_PATH}")
+    print(f"CDC UCI Dataset saved to: {CDC_DATASET_PATH} (Records: {result.get('cdc_records_count', 0)})")
     print(f"Model bundle saved to: {MODEL_PATH}")
     for disease, metric in result["metrics"].items():
         best = metric["best_model"]
         f1 = metric["comparison"][best]["f1"]
-        print(f"{disease}: best={best}, f1={f1}")
-
+        auc = metric["comparison"][best]["roc_auc"]
+        print(f"{disease}: best={best}, f1={f1}, roc_auc={auc}, is_cdc={metric.get('is_cdc_dataset', False)}")

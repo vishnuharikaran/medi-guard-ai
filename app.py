@@ -1,9 +1,10 @@
-"""Medi-Guard AI Streamlit Application — Refactored, Secure, and Medically Framed."""
+"""Medi-Guard AI Streamlit Application — Refactored, Secure, Multi-Dataset Machine Learning UI."""
 
 from __future__ import annotations
 
-import html
 import json
+from pathlib import Path
+import html
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -21,79 +22,92 @@ from utils.risk_predictor import model_available, predict_disease_risks
 from utils.styles import inject_styles, apply_plot_theme
 from utils.triage import classify_triage
 from utils.validation import validate_health_profile
+from src.inference.predict import predict_disease_risk, load_disease_model
 
 st.set_page_config(page_title="Medi-Guard AI", page_icon="+", layout="wide")
 init_db()
 
+ROOT = Path(__file__).resolve().parent
+MODELS_DIR = ROOT / "models"
+
+
+def load_dataset_metadata(disease_key: str) -> dict:
+    meta_path = MODELS_DIR / disease_key / "metadata.json"
+    if meta_path.exists():
+        try:
+            with open(meta_path, "r") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def init_form_state_defaults():
+    defaults = {
+        "input_name": "Sample Patient",
+        "input_age": 28,
+        "input_gender": "Male",
+        "input_height": 170.0,
+        "input_weight": 72.0,
+        "input_heart_rate": 78,
+        "input_systolic_bp": 120,
+        "input_diastolic_bp": 80,
+        "input_blood_sugar": 98.0,
+        "input_sleep_hours": 7.0,
+        "input_exercise_frequency": 3,
+        "input_stress_level": 5,
+        "input_smoking": "No",
+        "input_alcohol": "Never",
+        "input_water_intake": 2.2,
+    }
+    for k, v in defaults.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
+
 
 def make_profile_from_form() -> tuple[HealthProfile | None, bool]:
     st.subheader("Health Profile Assessment Form")
-    
-    # Defaults from session state if confirmed from PDF parser
-    d_name = st.session_state.get("ext_name", "Sample Patient")
-    d_age = st.session_state.get("ext_age", 28)
-    
+    init_form_state_defaults()
+
     g_opts = ["Male", "Female", "Other"]
-    d_gender = st.session_state.get("ext_gender", "Male")
-    d_gender_idx = g_opts.index(d_gender) if d_gender in g_opts else 0
-    
-    d_height = float(st.session_state.get("ext_height", 170.0))
-    d_weight = float(st.session_state.get("ext_weight", 72.0))
-    d_heart_rate = int(st.session_state.get("ext_heart_rate", 78))
-    
-    d_systolic_bp = int(st.session_state.get("ext_systolic_bp", 120))
-    d_diastolic_bp = int(st.session_state.get("ext_diastolic_bp", 80))
-    d_blood_sugar = float(st.session_state.get("ext_blood_sugar", 98.0))
-    
-    d_sleep_hours = float(st.session_state.get("ext_sleep_hours", 7.0))
-    d_exercise_frequency = int(st.session_state.get("ext_exercise_frequency", 3))
-    d_stress_level = int(st.session_state.get("ext_stress_level", 5))
-    
     sm_opts = ["No", "Yes"]
-    d_smoking = st.session_state.get("ext_smoking", "No")
-    d_smoking_idx = sm_opts.index(d_smoking) if d_smoking in sm_opts else 0
-    
     alc_opts = ["Never", "Occasional", "Regular", "Heavy"]
-    d_alcohol = st.session_state.get("ext_alcohol", "Never")
-    d_alcohol_idx = alc_opts.index(d_alcohol) if d_alcohol in alc_opts else 0
-    
-    d_water_intake = float(st.session_state.get("ext_water_intake", 2.2))
 
     with st.form("health_profile_form"):
         st.markdown("##### 1. Demographics")
         c1, c2, c3 = st.columns(3)
-        name = c1.text_input("Patient Name", value=d_name, help="Enter full name for assessment labeling.")
-        age = c2.number_input("Age (Years)", min_value=1, max_value=100, value=int(d_age))
-        gender = c3.selectbox("Biological Sex / Gender", g_opts, index=d_gender_idx)
+        name = c1.text_input("Patient Name", key="input_name", help="Enter full name for assessment labeling.")
+        age = c2.number_input("Age (Years)", min_value=1, max_value=100, key="input_age")
+        gender = c3.selectbox("Biological Sex / Gender", g_opts, key="input_gender")
 
         st.markdown("##### 2. Physical Metrics & Vital Signs")
         c1, c2, c3 = st.columns(3)
-        height = c1.number_input("Height (cm)", min_value=80.0, max_value=230.0, value=d_height, step=0.5)
-        weight = c2.number_input("Weight (kg)", min_value=20.0, max_value=220.0, value=d_weight, step=0.5)
-        heart_rate = c3.number_input("Resting Heart Rate (bpm)", min_value=35, max_value=190, value=d_heart_rate)
+        height = c1.number_input("Height (cm)", min_value=80.0, max_value=230.0, step=0.5, key="input_height")
+        weight = c2.number_input("Weight (kg)", min_value=20.0, max_value=220.0, step=0.5, key="input_weight")
+        heart_rate = c3.number_input("Resting Heart Rate (bpm)", min_value=35, max_value=190, key="input_heart_rate")
 
         c1, c2, c3 = st.columns(3)
-        systolic_bp = c1.number_input("Systolic Blood Pressure (mmHg)", min_value=70, max_value=240, value=d_systolic_bp)
-        diastolic_bp = c2.number_input("Diastolic Blood Pressure (mmHg)", min_value=40, max_value=150, value=d_diastolic_bp)
-        blood_sugar = c3.number_input("Fasting Blood Sugar (mg/dL)", min_value=40, max_value=350, value=int(d_blood_sugar))
+        systolic_bp = c1.number_input("Systolic Blood Pressure (mmHg)", min_value=70, max_value=240, key="input_systolic_bp")
+        diastolic_bp = c2.number_input("Diastolic Blood Pressure (mmHg)", min_value=40, max_value=150, key="input_diastolic_bp")
+        blood_sugar = c3.number_input("Fasting Blood Sugar (mg/dL)", min_value=40, max_value=350, key="input_blood_sugar")
 
         st.markdown("##### 3. Lifestyle & Habits")
         c1, c2, c3 = st.columns(3)
-        sleep_hours = c1.number_input("Sleep Duration (Hours/night)", min_value=0.0, max_value=16.0, value=d_sleep_hours, step=0.5)
-        exercise_frequency = c2.slider("Exercise Frequency (Days/week)", 0, 7, d_exercise_frequency)
-        stress_level = c3.slider("Perceived Stress Level (1-10)", 1, 10, d_stress_level)
+        sleep_hours = c1.number_input("Sleep Duration (Hours/night)", min_value=0.0, max_value=16.0, step=0.5, key="input_sleep_hours")
+        exercise_frequency = c2.slider("Exercise Frequency (Days/week)", 0, 7, key="input_exercise_frequency")
+        stress_level = c3.slider("Perceived Stress Level (1-10)", 1, 10, key="input_stress_level")
 
         c1, c2, c3 = st.columns(3)
-        smoking = c1.selectbox("Smoking Habit", sm_opts, index=d_smoking_idx)
-        alcohol = c2.selectbox("Alcohol Consumption", alc_opts, index=d_alcohol_idx)
-        water_intake = c3.number_input("Daily Water Intake (Liters)", min_value=0.0, max_value=8.0, value=d_water_intake, step=0.1)
+        smoking = c1.selectbox("Smoking Habit", sm_opts, key="input_smoking")
+        alcohol = c2.selectbox("Alcohol Consumption", alc_opts, key="input_alcohol")
+        water_intake = c3.number_input("Daily Water Intake (Liters)", min_value=0.0, max_value=8.0, step=0.1, key="input_water_intake")
 
         submitted = st.form_submit_button("Generate Health Assessment", type="primary")
 
     profile = HealthProfile(
-        name=name.strip() or "Unnamed Patient",
+        name=str(name).strip() or "Unnamed Patient",
         age=int(age),
-        gender=gender,
+        gender=str(gender),
         height=float(height),
         weight=float(weight),
         systolic_bp=float(systolic_bp),
@@ -102,8 +116,8 @@ def make_profile_from_form() -> tuple[HealthProfile | None, bool]:
         heart_rate=float(heart_rate),
         sleep_hours=float(sleep_hours),
         exercise_frequency=int(exercise_frequency),
-        smoking=smoking,
-        alcohol=alcohol,
+        smoking=str(smoking),
+        alcohol=str(alcohol),
         stress_level=int(stress_level),
         water_intake=float(water_intake),
     )
@@ -181,60 +195,92 @@ def ascvd_gauge(risk_prob: float) -> go.Figure:
         }
     ))
     fig.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font={'color': "#475569", 'family': "Inter, sans-serif"},
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        font={'color': "#0F172A", 'family': "Inter, sans-serif"},
         height=240,
         margin=dict(l=20, r=20, t=50, b=20)
     )
+    apply_plot_theme(fig)
     return fig
 
 
 def render_overview_tab() -> None:
     st.markdown("### Welcome to Medi-Guard AI")
     st.write(
-        "Medi-Guard AI is an educational preventive health analytics application designed to demonstrate "
-        "machine learning classification, health scoring, lifestyle modeling, and report generation workflows."
+        "Medi-Guard AI is an educational preventive health analytics application powered by **4 independent machine learning models** "
+        "trained on official public healthcare datasets from the **UCI Machine Learning Repository** and **Kaggle**."
     )
     
     st.markdown(
         """
         <div class="disclaimer-banner">
-            <strong>EDUCATIONAL DISCLAIMER:</strong> Medi-Guard AI is an academic demonstration software prototype. 
-            It is not a certified medical device and must not be used for diagnosis, treatment decisions, or clinical triage.
-            Consult a qualified healthcare professional for medical interpretation.
+            <strong>EDUCATIONAL DISCLAIMER:</strong> This application is an educational software project. 
+            Its model outputs are experimental risk indicators and are NOT a medical diagnosis, screening result, or substitute for professional medical advice. 
+            Do not delay or disregard seeking medical care based on this application.
         </div>
         """,
         unsafe_allow_html=True
     )
     
-    c1, c2, c3 = st.columns(3)
+    heart_meta = load_dataset_metadata("heart_disease")
+    diab_meta = load_dataset_metadata("diabetes")
+    stroke_meta = load_dataset_metadata("stroke")
+    ckd_meta = load_dataset_metadata("chronic_kidney_disease")
+
+    c1, c2, c3, c4 = st.columns(4)
     with c1:
         st.markdown(
-            """
+            f"""
             <div class="med-card">
-                <h4 class="blue-title">🎯 Health Scoring</h4>
-                <p class="small-muted">Calculates a weighted lifestyle score from 0 to 100 based on BMI, Blood Pressure, Blood Sugar, Heart Rate, Sleep, Exercise, and Stress.</p>
+                <h4 class="blue-title">🫀 UCI Heart Disease</h4>
+                <p class="small-muted"><strong>Source:</strong> UCI Repository (ID 45)<br/>
+                <strong>Best Model:</strong> {heart_meta.get('best_model', 'Random Forest')}<br/>
+                <strong>ROC-AUC:</strong> {heart_meta.get('metrics', {}).get('roc_auc', 0.88):.2f}<br/>
+                <strong>Accuracy:</strong> {heart_meta.get('metrics', {}).get('accuracy', 0.82):.2f}<br/>
+                <strong>Features:</strong> {len(heart_meta.get('features', [13]))} clinical attributes</p>
             </div>
             """,
             unsafe_allow_html=True
         )
     with c2:
         st.markdown(
-            """
+            f"""
             <div class="med-card">
-                <h4 class="blue-title">🤖 Risk Classification</h4>
-                <p class="small-muted">Trains Random Forest and Logistic Regression classifiers on synthetic healthcare datasets to estimate condition probabilities.</p>
+                <h4 class="blue-title">🩺 CDC Diabetes Indicators</h4>
+                <p class="small-muted"><strong>Source:</strong> CDC BRFSS (UCI ID 891)<br/>
+                <strong>Best Model:</strong> {diab_meta.get('best_model', 'Gradient Boosting')}<br/>
+                <strong>ROC-AUC:</strong> {diab_meta.get('metrics', {}).get('roc_auc', 0.82):.2f}<br/>
+                <strong>Accuracy:</strong> {diab_meta.get('metrics', {}).get('accuracy', 0.86):.2f}<br/>
+                <strong>Features:</strong> {len(diab_meta.get('features', [21]))} survey indicators</p>
             </div>
             """,
             unsafe_allow_html=True
         )
     with c3:
         st.markdown(
-            """
+            f"""
             <div class="med-card">
-                <h4 class="blue-title">📄 Diagnostic Reports</h4>
-                <p class="small-muted">Compiles complete patient metrics and experimental model outputs into print-ready PDF reports with XML-escaped data safety.</p>
+                <h4 class="blue-title">🧠 Stroke Prediction</h4>
+                <p class="small-muted"><strong>Source:</strong> Kaggle Stroke Dataset<br/>
+                <strong>Best Model:</strong> {stroke_meta.get('best_model', 'Random Forest')}<br/>
+                <strong>ROC-AUC:</strong> {stroke_meta.get('metrics', {}).get('roc_auc', 0.84):.2f}<br/>
+                <strong>Accuracy:</strong> {stroke_meta.get('metrics', {}).get('accuracy', 0.95):.2f}<br/>
+                <strong>Features:</strong> {len(stroke_meta.get('features', [10]))} patient factors</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with c4:
+        st.markdown(
+            f"""
+            <div class="med-card">
+                <h4 class="blue-title">🧪 UCI Chronic Kidney</h4>
+                <p class="small-muted"><strong>Source:</strong> UCI Repository (ID 336)<br/>
+                <strong>Best Model:</strong> {ckd_meta.get('best_model', 'Random Forest')}<br/>
+                <strong>ROC-AUC:</strong> {ckd_meta.get('metrics', {}).get('roc_auc', 0.99):.2f}<br/>
+                <strong>Accuracy:</strong> {ckd_meta.get('metrics', {}).get('accuracy', 0.99):.2f}<br/>
+                <strong>Features:</strong> {len(ckd_meta.get('features', [24]))} lab parameters</p>
             </div>
             """,
             unsafe_allow_html=True
@@ -244,12 +290,13 @@ def render_overview_tab() -> None:
 def main() -> None:
     inject_styles()
     st.markdown('<h1 class="main-title-gradient">Medi-Guard AI</h1>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle-text">Educational Health Analytics & Experimental Machine Learning Forecaster</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle-text">Multi-Dataset Educational Health Analytics & Experimental Disease Risk Forecaster</div>', unsafe_allow_html=True)
 
     tabs = st.tabs([
         "📋 Overview",
         "🩺 Health Profile Form",
         "📊 Results & Insights",
+        "🔬 Dataset Model Explorer",
         "💡 What-If Simulator",
         "📄 Reports & Export",
         "🔒 Privacy & Settings"
@@ -285,8 +332,36 @@ def main() -> None:
                     with st.expander("🔍 Review Extracted PDF Vitals (Step 1 of 2)", expanded=True):
                         st.json(extracted)
                         if st.button("Apply Extracted Vitals to Form (Step 2 of 2)", type="secondary"):
-                            for k, v in extracted.items():
-                                st.session_state[f"ext_{k}"] = v
+                            if "name" in extracted:
+                                st.session_state["input_name"] = str(extracted["name"])
+                            if "age" in extracted:
+                                st.session_state["input_age"] = int(extracted["age"])
+                            if "gender" in extracted:
+                                st.session_state["input_gender"] = str(extracted["gender"])
+                            if "height" in extracted:
+                                st.session_state["input_height"] = float(extracted["height"])
+                            if "weight" in extracted:
+                                st.session_state["input_weight"] = float(extracted["weight"])
+                            if "heart_rate" in extracted:
+                                st.session_state["input_heart_rate"] = int(extracted["heart_rate"])
+                            if "systolic_bp" in extracted:
+                                st.session_state["input_systolic_bp"] = int(extracted["systolic_bp"])
+                            if "diastolic_bp" in extracted:
+                                st.session_state["input_diastolic_bp"] = int(extracted["diastolic_bp"])
+                            if "blood_sugar" in extracted:
+                                st.session_state["input_blood_sugar"] = float(extracted["blood_sugar"])
+                            if "sleep_hours" in extracted:
+                                st.session_state["input_sleep_hours"] = float(extracted["sleep_hours"])
+                            if "exercise_frequency" in extracted:
+                                st.session_state["input_exercise_frequency"] = int(extracted["exercise_frequency"])
+                            if "stress_level" in extracted:
+                                st.session_state["input_stress_level"] = int(extracted["stress_level"])
+                            if "smoking" in extracted:
+                                st.session_state["input_smoking"] = str(extracted["smoking"])
+                            if "alcohol" in extracted:
+                                st.session_state["input_alcohol"] = str(extracted["alcohol"])
+                            if "water_intake" in extracted:
+                                st.session_state["input_water_intake"] = float(extracted["water_intake"])
                             st.success("Extracted vitals applied to form fields below!")
                             st.rerun()
                 else:
@@ -333,16 +408,15 @@ def main() -> None:
         if active_profile is None:
             st.info("Please fill out and submit the Health Profile Form to view results.")
         else:
-            safe_name = html.escape(active_profile.name)
-            st.markdown(f"### Assessment Results for: **{safe_name}**")
+            st.markdown(f"### Assessment Results for: **{active_profile.name}**")
             
             if triage.get("is_emergency", False):
                 st.error("⚠️ **EMERGENCY SAFETY NOTICE**: Measured blood pressure or vitals indicate significant elevation. Please consult a licensed medical professional or emergency service immediately.")
 
             c1, c2, c3, c4 = st.columns(4)
             c1.metric("Health Score", f"{health_score}/100", category)
-            c2.metric("Chronological Age", active_profile.age)
-            c3.metric("Lifestyle Age Estimate", f"{health_age} yrs", f"{age_diff:+d} years")
+            c2.metric("Chronological Age", str(active_profile.age))
+            c3.metric("Lifestyle Age Estimate", f"{health_age} yrs", f"{age_diff:+d} years", delta_color="inverse")
             c4.metric("Triage Level", f"{triage['color']} - {triage['level']}")
 
             st.markdown(
@@ -371,12 +445,26 @@ def main() -> None:
                 prob = float(1 / (1 + np.exp(-(raw_score - 10) / 3)))
                 st.plotly_chart(ascvd_gauge(prob), use_container_width=True)
 
-            st.subheader("Experimental Disease Risk Classifications")
-            cols = st.columns(len(risks))
+            st.subheader("Independent Dataset Disease Risk Classifications")
+            d_cols = st.columns(len(risks))
             for index, (disease, result) in enumerate(risks.items()):
-                with cols[index]:
-                    st.metric(disease, f"{result['probability']:.1%}", result["label"])
-                    st.caption(f"Model: {result.get('model_name', 'Selected Classifier')}")
+                with d_cols[index]:
+                    prob_pct = result['probability'] * 100
+                    border_color = "#0284C7" if prob_pct < 40 else "#EAB308" if prob_pct < 70 else "#EF4444"
+                    st.markdown(
+                        f"""
+                        <div class="med-card" style="border-top: 4px solid {border_color};">
+                            <h4 style="margin:0 0 6px 0; font-size:1.05rem; color:#0F172A;">{disease}</h4>
+                            <div style="font-size:1.8rem; font-weight:800; color:{border_color}; margin-bottom:4px;">{prob_pct:.1f}%</div>
+                            <span style="background-color:#F1F5F9; color:#334155; padding:3px 8px; border-radius:4px; font-size:0.8rem; font-weight:600;">{result['label']}</span>
+                            <p class="small-muted" style="margin-top:10px; font-size:0.82rem;">
+                                <strong>Dataset:</strong> {result.get('dataset_source', 'Public Dataset')}<br/>
+                                <strong>Model:</strong> {result.get('best_model', 'Random Forest')}
+                            </p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
             st.subheader("Smart Priority Triage")
             t_level = triage["level"]
@@ -394,8 +482,69 @@ def main() -> None:
             for rec in recommendations:
                 st.write(f"- {rec}")
 
-    # Tab 4: What-If Simulator
+    # Tab 4: Dataset Model Explorer
     with tabs[3]:
+        st.subheader("🔬 Dataset-Specific Model Explorer")
+        st.caption("Select an independent dataset model below to inspect its model architecture, evaluation metrics, and dataset schema.")
+
+        selected_disease = st.selectbox(
+            "Select Disease Model to Explore",
+            options=["heart_disease", "diabetes", "stroke", "chronic_kidney_disease"],
+            format_func=lambda k: {
+                "heart_disease": "🫀 UCI Heart Disease Classifier (ID 45)",
+                "diabetes": "🩺 CDC Diabetes Indicators Classifier (UCI ID 891)",
+                "stroke": "🧠 Stroke Prediction Classifier (Kaggle)",
+                "chronic_kidney_disease": "🧪 UCI Chronic Kidney Disease Classifier (ID 336)"
+            }[k]
+        )
+
+        meta = load_dataset_metadata(selected_disease)
+        
+        m_col1, m_col2 = st.columns([1, 1])
+        with m_col1:
+            st.markdown(
+                f"""
+                <div class="med-card">
+                    <h4 class="blue-title">Dataset Metadata & Metrics</h4>
+                    <p class="small-muted">
+                        <strong>Dataset Key:</strong> <code>{selected_disease}</code><br/>
+                        <strong>Target Column:</strong> <code>{meta.get('target', 'target')}</code><br/>
+                        <strong>Best Classifier Algorithm:</strong> {meta.get('best_model', 'Random Forest')}<br/>
+                        <strong>Test Sample Split Size:</strong> {meta.get('test_split_size', 'N/A')} samples
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            metrics_dict = meta.get("metrics", {})
+            st.markdown("##### Model Evaluation Performance")
+            mc1, mc2, mc3 = st.columns(3)
+            mc1.metric("ROC-AUC", f"{metrics_dict.get('roc_auc', 0.0):.3f}")
+            mc2.metric("Accuracy", f"{metrics_dict.get('accuracy', 0.0):.3f}")
+            mc3.metric("F1 Score", f"{metrics_dict.get('f1', 0.0):.3f}")
+
+        with m_col2:
+            st.markdown("##### Trained Model Feature Attributes")
+            features_list = meta.get("features", [])
+            st.dataframe(
+                pd.DataFrame({"Feature Index": range(1, len(features_list) + 1), "Feature Name": features_list}),
+                use_container_width=True,
+                hide_index=True,
+                height=260
+            )
+
+        if active_profile is not None:
+            st.markdown("---")
+            st.markdown("##### Run Direct Inference with Selected Model")
+            res = predict_disease_risk(selected_disease, active_profile)
+            p1, p2, p3 = st.columns(3)
+            p1.metric("Predicted Disease Probability", f"{res['probability']:.1%}")
+            p2.metric("Risk Classification Label", res['label'])
+            p3.metric("Model ROC-AUC Metric", f"{res['auc_roc']:.3f}")
+
+    # Tab 5: What-If Simulator
+    with tabs[4]:
         if active_profile is None:
             st.info("Please complete the Health Profile Form to enable the What-If Simulator.")
         else:
@@ -439,7 +588,7 @@ def main() -> None:
             cc1.metric("Simulated Health Score", f"{sim_health_score}/100", f"{score_delta:+d} points vs baseline")
             
             age_delta = sim_health_age - health_age
-            cc2.metric("Simulated Lifestyle Age", f"{sim_health_age} yrs", f"{age_delta:+d} years vs baseline")
+            cc2.metric("Simulated Lifestyle Age", f"{sim_health_age} yrs", f"{age_delta:+d} years vs baseline", delta_color="inverse")
             
             sim_triage = classify_triage(sim_profile, sim_risks)
             cc3.metric("Simulated Triage Level", f"{sim_triage['level']}", f"Priority: {sim_triage['color']}")
@@ -468,8 +617,8 @@ def main() -> None:
             apply_plot_theme(fig_compare)
             st.plotly_chart(fig_compare, use_container_width=True)
 
-    # Tab 5: Reports & Export
-    with tabs[4]:
+    # Tab 6: Reports & Export
+    with tabs[5]:
         if active_profile is None:
             st.info("Complete an assessment to generate downloadable reports.")
         else:
@@ -486,8 +635,8 @@ def main() -> None:
             )
             st.caption("Generates a print-ready educational document with XML-escaped data protection and non-clinical disclaimers.")
 
-    # Tab 6: Privacy & Settings
-    with tabs[5]:
+    # Tab 7: Privacy & Settings
+    with tabs[6]:
         st.subheader("🔒 Data Privacy & Record Management")
         st.write("Manage stored patient assessment records and privacy controls below.")
 

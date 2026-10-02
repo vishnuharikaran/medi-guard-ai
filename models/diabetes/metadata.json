@@ -1,0 +1,100 @@
+{
+  "dataset_name": "diabetes",
+  "features": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "BMI",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "MentHlth",
+    "PhysHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "target": "target",
+  "best_model": "Random Forest",
+  "test_split_size": 50736,
+  "metrics": {
+    "accuracy": 0.7272,
+    "precision": 0.3091,
+    "recall": 0.7755,
+    "f1": 0.442,
+    "roc_auc": 0.8226,
+    "sensitivity": 0.7755,
+    "specificity": 0.7194,
+    "confusion_matrix": [
+      [
+        31414,
+        12253
+      ],
+      [
+        1587,
+        5482
+      ]
+    ],
+    "tp": 5482,
+    "tn": 31414,
+    "fp": 12253,
+    "fn": 1587
+  },
+  "all_metrics": {
+    "Random Forest": {
+      "accuracy": 0.7272,
+      "precision": 0.3091,
+      "recall": 0.7755,
+      "f1": 0.442,
+      "roc_auc": 0.8226,
+      "sensitivity": 0.7755,
+      "specificity": 0.7194,
+      "confusion_matrix": [
+        [
+          31414,
+          12253
+        ],
+        [
+          1587,
+          5482
+        ]
+      ],
+      "tp": 5482,
+      "tn": 31414,
+      "fp": 12253,
+      "fn": 1587
+    },
+    "Logistic Regression": {
+      "accuracy": 0.7315,
+      "precision": 0.3107,
+      "recall": 0.7611,
+      "f1": 0.4413,
+      "roc_auc": 0.8196,
+      "sensitivity": 0.7611,
+      "specificity": 0.7267,
+      "confusion_matrix": [
+        [
+          31734,
+          11933
+        ],
+        [
+          1689,
+          5380
+        ]
+      ],
+      "tp": 5380,
+      "tn": 31734,
+      "fp": 11933,
+      "fn": 1689
+    }
+  }
+}

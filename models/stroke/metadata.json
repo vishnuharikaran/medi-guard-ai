@@ -1,0 +1,89 @@
+{
+  "dataset_name": "stroke",
+  "features": [
+    "gender",
+    "age",
+    "hypertension",
+    "heart_disease",
+    "ever_married",
+    "work_type",
+    "Residence_type",
+    "avg_glucose_level",
+    "bmi",
+    "smoking_status"
+  ],
+  "target": "target",
+  "best_model": "Random Forest",
+  "test_split_size": 1022,
+  "metrics": {
+    "accuracy": 0.8728,
+    "precision": 0.1774,
+    "recall": 0.44,
+    "f1": 0.2529,
+    "roc_auc": 0.8004,
+    "sensitivity": 0.44,
+    "specificity": 0.8951,
+    "confusion_matrix": [
+      [
+        870,
+        102
+      ],
+      [
+        28,
+        22
+      ]
+    ],
+    "tp": 22,
+    "tn": 870,
+    "fp": 102,
+    "fn": 28
+  },
+  "all_metrics": {
+    "Random Forest": {
+      "accuracy": 0.8728,
+      "precision": 0.1774,
+      "recall": 0.44,
+      "f1": 0.2529,
+      "roc_auc": 0.8004,
+      "sensitivity": 0.44,
+      "specificity": 0.8951,
+      "confusion_matrix": [
+        [
+          870,
+          102
+        ],
+        [
+          28,
+          22
+        ]
+      ],
+      "tp": 22,
+      "tn": 870,
+      "fp": 102,
+      "fn": 28
+    },
+    "Logistic Regression": {
+      "accuracy": 0.7456,
+      "precision": 0.1379,
+      "recall": 0.8,
+      "f1": 0.2353,
+      "roc_auc": 0.8437,
+      "sensitivity": 0.8,
+      "specificity": 0.7428,
+      "confusion_matrix": [
+        [
+          722,
+          250
+        ],
+        [
+          10,
+          40
+        ]
+      ],
+      "tp": 40,
+      "tn": 722,
+      "fp": 250,
+      "fn": 10
+    }
+  }
+}

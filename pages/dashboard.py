@@ -23,9 +23,9 @@ if history.empty:
 
 latest = history.iloc[0]
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("Latest Patient", html.escape(str(latest["name"])))
+c1.metric("Latest Patient", str(latest["name"]))
 c2.metric("Health Score", f"{int(latest['health_score'])}/100", latest["risk_category"])
-c3.metric("Lifestyle Age Estimate", int(latest["health_age"]))
+c3.metric("Lifestyle Age Estimate", f"{int(latest['health_age'])} yrs")
 c4.metric("Triage Priority", f"{latest['triage_color']} - {latest['triage_level']}")
 
 left, right = st.columns(2)

@@ -32,12 +32,10 @@ else:
 
 st.markdown("---")
 st.subheader("🗑️ Record Deletion Control")
-col1, col2 = st.columns([2, 1])
+col1, col2 = st.columns([2, 1], vertical_alignment="bottom")
 with col1:
     record_to_del = st.number_input("Record ID to remove", min_value=1, step=1)
 with col2:
-    st.write("")
-    st.write("")
     if st.button("Delete Selected Record", type="secondary"):
         if delete_record(int(record_to_del)):
             st.success(f"Record #{record_to_del} removed.")

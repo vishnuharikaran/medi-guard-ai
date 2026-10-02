@@ -1,19 +1,20 @@
-"""Unit tests for ML model prediction and pipeline integrity."""
+"""Unit tests for ML model prediction and pipeline integrity across dataset models."""
 
 from utils.preprocessing import HealthProfile
-from utils.risk_predictor import model_available, load_model_bundle, predict_disease_risks
+from utils.risk_predictor import model_available, predict_disease_risks
+from src.inference.predict import load_disease_model
 
 
 def test_model_availability():
     assert model_available() is True
 
 
-def test_model_bundle_loading():
-    bundle = load_model_bundle()
-    assert "models" in bundle
-    assert "metrics" in bundle
-    assert "features" in bundle
-    assert len(bundle["models"]) >= 4
+def test_individual_disease_model_loading():
+    for disease in ["diabetes", "heart_disease", "stroke", "chronic_kidney_disease"]:
+        model, schema, meta = load_disease_model(disease)
+        assert model is not None
+        assert "features" in schema
+        assert "best_model" in meta
 
 
 def test_predict_disease_risks():
@@ -38,8 +39,8 @@ def test_predict_disease_risks():
     assert isinstance(risks, dict)
     assert "Diabetes" in risks
     assert "Heart Disease" in risks
-    assert "Hypertension" in risks
-    assert "Obesity" in risks
+    assert "Stroke" in risks
+    assert "Chronic Kidney Disease" in risks
 
     for disease, details in risks.items():
         prob = details["probability"]

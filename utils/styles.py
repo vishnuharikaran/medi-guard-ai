@@ -5,7 +5,7 @@ import streamlit as st
 
 
 def inject_styles() -> None:
-    """Injects modern, professional healthcare UI CSS styles into Streamlit."""
+    """Injects modern, high-contrast healthcare UI CSS styles into Streamlit."""
     st.markdown(
         """
         <style>
@@ -16,14 +16,14 @@ def inject_styles() -> None:
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         }
 
-        /* App background styling - Professional Clean Healthcare palette */
+        /* App background styling - Clean Light Healthcare palette */
         .stApp {
             background-color: #F8FAFC !important;
-            color: #1E293B !important;
+            color: #0F172A !important;
         }
 
         /* Header gradient styling */
-        h1, h2, h3 {
+        h1, h2, h3, h4, h5, h6 {
             font-family: 'Inter', sans-serif !important;
             color: #0F172A !important;
             font-weight: 700 !important;
@@ -76,12 +76,12 @@ def inject_styles() -> None:
         }
         
         .small-muted {
-            color: #64748B !important;
+            color: #475569 !important;
             font-size: 0.92rem !important;
             line-height: 1.5 !important;
         }
 
-        /* Metric Cards - Modern Healthcare styling */
+        /* Metric Cards */
         div[data-testid="stMetric"] {
             background: #FFFFFF !important;
             border: 1px solid #E2E8F0 !important;
@@ -89,10 +89,10 @@ def inject_styles() -> None:
             padding: 16px 20px !important;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
         }
-        div[data-testid="stMetric"] label {
-            color: #64748B !important;
+        div[data-testid="stMetric"] label, div[data-testid="stMetric"] label p {
+            color: #475569 !important;
             font-size: 0.82rem !important;
-            font-weight: 600 !important;
+            font-weight: 700 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
         }
@@ -111,12 +111,125 @@ def inject_styles() -> None:
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03) !important;
         }
 
-        /* Input Controls */
-        input[type="text"], input[type="number"], div[data-baseweb="select"] {
-            background-color: #F8FAFC !important;
+        /* Input Controls & Labels */
+        label, [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] p, .stWidgetLabel p {
+            color: #0F172A !important;
+            font-weight: 600 !important;
+            font-size: 0.92rem !important;
+        }
+
+        div[data-testid="stMarkdownContainer"] p, div[data-testid="stMarkdownContainer"] span {
+            color: #1E293B !important;
+        }
+
+        /* Native Inputs & Textareas */
+        input[type="text"], input[type="number"], textarea, select, div[data-baseweb="input"] {
+            background-color: #FFFFFF !important;
             color: #0F172A !important;
             border: 1px solid #CBD5E1 !important;
             border-radius: 6px !important;
+        }
+
+        /* Number Input Step Buttons (- / +) */
+        button[data-testid="stNumberInputStepDown"], 
+        button[data-testid="stNumberInputStepUp"], 
+        div[data-testid="stNumberInputContainer"] button {
+            background-color: #F1F5F9 !important;
+            color: #0F172A !important;
+            border: 1px solid #CBD5E1 !important;
+        }
+        button[data-testid="stNumberInputStepDown"]:hover, 
+        button[data-testid="stNumberInputStepUp"]:hover {
+            background-color: #E2E8F0 !important;
+            color: #0284C7 !important;
+        }
+        button[data-testid="stNumberInputStepDown"] svg, 
+        button[data-testid="stNumberInputStepUp"] svg {
+            fill: #0F172A !important;
+            color: #0F172A !important;
+        }
+
+        /* BaseWeb Select dropdowns & Popovers */
+        div[data-baseweb="select"] > div, div[data-baseweb="select"] input {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border-color: #CBD5E1 !important;
+        }
+
+        div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"], li[role="option"] {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+        }
+
+        div[data-baseweb="select"] span, div[data-baseweb="select"] div {
+            color: #0F172A !important;
+        }
+
+        /* File Uploader Dropzone Styling */
+        div[data-testid="stFileUploader"], 
+        section[data-testid="stFileUploaderDropzone"], 
+        div[data-testid="stFileUploaderDropzone"] {
+            background-color: #F0F9FF !important;
+            border: 2px dashed #0284C7 !important;
+            border-radius: 12px !important;
+            padding: 24px !important;
+        }
+
+        section[data-testid="stFileUploaderDropzone"] * {
+            background-color: transparent !important;
+            color: #0F172A !important;
+        }
+
+        section[data-testid="stFileUploaderDropzone"] button,
+        div[data-testid="stFileUploaderDropzone"] button {
+            background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
+            color: #FFFFFF !important;
+            border-radius: 8px !important;
+            border: none !important;
+            font-weight: 600 !important;
+            box-shadow: 0 2px 6px rgba(2, 132, 201, 0.2) !important;
+        }
+
+        section[data-testid="stFileUploaderDropzone"] small, 
+        section[data-testid="stFileUploaderDropzone"] span, 
+        section[data-testid="stFileUploaderDropzone"] div,
+        section[data-testid="stFileUploaderDropzone"] p {
+            color: #475569 !important;
+        }
+
+        section[data-testid="stFileUploaderDropzone"] svg {
+            fill: #0284C7 !important;
+            color: #0284C7 !important;
+        }
+
+        /* Dataframe and Table styling */
+        div[data-testid="stDataFrame"], div[data-testid="stTable"], table {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 8px !important;
+        }
+
+        th, td, tr {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border-bottom: 1px solid #E2E8F0 !important;
+        }
+
+        /* Expanders styling */
+        div[data-testid="stExpander"] {
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 8px !important;
+        }
+
+        div[data-testid="stExpander"] * {
+            color: #0F172A !important;
+        }
+
+        /* Sliders */
+        div[data-testid="stSlider"] p, div[data-testid="stSlider"] label {
+            color: #0F172A !important;
         }
 
         /* Buttons styling */
@@ -186,12 +299,34 @@ def inject_styles() -> None:
 
 
 def apply_plot_theme(fig) -> None:
-    """Modifies a Plotly figure for clean presentation on light healthcare background."""
+    """Modifies a Plotly figure for clean, highly legible presentation on light healthcare background."""
     fig.update_layout(
         template="plotly_white",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#475569", family="Inter, sans-serif"),
-        xaxis=dict(gridcolor="#E2E8F0", linecolor="#CBD5E1", zerolinecolor="#CBD5E1"),
-        yaxis=dict(gridcolor="#E2E8F0", linecolor="#CBD5E1", zerolinecolor="#CBD5E1")
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        font=dict(color="#0F172A", family="Inter, sans-serif", size=12),
+        title=dict(font=dict(color="#0F172A", family="Inter, sans-serif", size=15, weight=700)),
+        legend=dict(
+            font=dict(color="#0F172A", family="Inter, sans-serif"),
+            title=dict(font=dict(color="#0F172A"))
+        ),
+        xaxis=dict(
+            title_font=dict(color="#0F172A", size=13),
+            tickfont=dict(color="#334155", size=11),
+            gridcolor="#E2E8F0",
+            linecolor="#CBD5E1",
+            zerolinecolor="#CBD5E1"
+        ),
+        yaxis=dict(
+            title_font=dict(color="#0F172A", size=13),
+            tickfont=dict(color="#334155", size=11),
+            gridcolor="#E2E8F0",
+            linecolor="#CBD5E1",
+            zerolinecolor="#CBD5E1"
+        )
     )
+    if hasattr(fig, "update_polars"):
+        fig.update_polars(
+            angularaxis=dict(tickfont=dict(color="#0F172A", size=12)),
+            radialaxis=dict(tickfont=dict(color="#334155", size=10), gridcolor="#E2E8F0")
+        )

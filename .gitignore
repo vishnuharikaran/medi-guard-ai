@@ -15,6 +15,15 @@ env/
 # Local Databases (Contains private patient history records)
 database/database.db
 database/*.db
+*.db
+
+# Data & Datasets
+data/raw/
+data/processed/
+datasets/
+
+# Environment
+.env
 
 # IDE Files
 .vscode/
