@@ -188,74 +188,21 @@ def display_results(profile: HealthProfile, save: bool = True) -> None:
     c3.metric("Health Age", health_age, f"{age_difference:+d} years")
     c4.metric("Triage", f"{triage['color']} - {triage['level']}")
 
-    # Export PDF & Neural Voice Briefing Buttons
+    # Export PDF Report Button
     from utils.pdf_generator import generate_health_report_pdf
     pdf_bytes = generate_health_report_pdf(
         profile, health_score, category, health_age, age_difference, triage, risks, recommendations
     )
     
-    bc1, bc2 = st.columns(2)
-    with bc1:
-        st.download_button(
-            label="📄 Download Diagnostic Clinical Report (PDF)",
-            data=pdf_bytes,
-            file_name=f"MediGuard_Report_{profile.name.replace(' ', '_')}.pdf",
-            mime="application/pdf",
-            type="primary"
-        )
-    with bc2:
-        import re
-        import streamlit.components.v1 as st_components
-        summary_text = build_insight_summary(profile, risks, health_score, health_age)
-        summary_clean = re.sub(r'<[^>]*>', '', summary_text)
-        safe_text = summary_clean.replace("'", "").replace('"', '').replace("\n", " ").strip()
-        html_code = f"""
-        <html>
-        <head>
-            <style>
-            .voice-btn {{
-                background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-                color: white;
-                border: none;
-                border-radius: 8px;
-                padding: 10px 24px;
-                font-weight: 600;
-                font-size: 0.9rem;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                transition: all 0.3s ease;
-                height: 42px;
-                width: 100%;
-                justify-content: center;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            }}
-            .voice-btn:hover {{
-                box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
-                transform: translateY(-1px);
-            }}
-            </style>
-        </head>
-        <body style="margin: 0; background: transparent; overflow: hidden;">
-            <button class="voice-btn" onclick="speakText()">
-                🔊 Listen to Voice Summary Briefing
-            </button>
-            <script>
-            function speakText() {{
-                window.speechSynthesis.cancel();
-                var utterance = new SpeechSynthesisUtterance("{safe_text}");
-                utterance.rate = 1.05;
-                window.speechSynthesis.speak(utterance);
-            }}
-            </script>
-        </body>
-        </html>
-        """
-        st_components.html(html_code, height=48)
+    st.download_button(
+        label="📄 Download Diagnostic Clinical Report (PDF)",
+        data=pdf_bytes,
+        file_name=f"MediGuard_Report_{profile.name.replace(' ', '_')}.pdf",
+        mime="application/pdf",
+        type="primary"
+    )
         
-    st.caption("Generates print-ready clinical diagnostic documents and speaks a synthesized medical briefing aloud.")
+    st.caption("Generates print-ready clinical diagnostic documents.")
 
     st.markdown(
         f"""
