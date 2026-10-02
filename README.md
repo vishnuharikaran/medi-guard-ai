@@ -1,87 +1,138 @@
-# MediGuard AI: Digital Health Twin and Future Disease Risk Forecaster
+# Medi-Guard AI — Educational Digital Health Twin & Future Disease Forecaster
 
-MediGuard AI is a final-year-level AI and Data Science machine learning project built with Streamlit, Python, SQLite, Scikit-Learn, Pandas, NumPy, Plotly, and Joblib.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.36%2B-FF4B4B.svg)](https://streamlit.io/)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3%2B-F7931E.svg)](https://scikit-learn.org/)
+[![Tests](https://img.shields.io/badge/Tests-11%20Passed-success.svg)](tests/)
 
-It creates a digital health twin from a user health profile, predicts future disease risk, calculates a health score and health age, performs smart triage classification, stores results in SQLite, and visualizes trends across historical records.
+Medi-Guard AI is an educational health analytics application built with Python, Streamlit, Scikit-Learn, SQLite, Pandas, Plotly, and ReportLab. It simulates a digital health twin, calculates lifestyle age estimates, predicts future disease risks, performs priority triage, and compiles print-ready PDF reports.
 
-## Features
+---
 
-- User health profile form with BMI, blood pressure, blood sugar, heart rate, sleep, exercise, smoking, alcohol, stress, and water intake.
-- Weighted Health Score from 0 to 100 with categories: Excellent, Good, Average, Poor, Critical.
-- Rule-based Health Age estimation.
-- Disease risk prediction for Diabetes, Heart Disease, Hypertension, and Obesity.
-- Random Forest and Logistic Regression model comparison with Accuracy, Precision, Recall, and F1 Score.
-- Smart triage classification: Green, Yellow, Orange, Red.
-- Dynamic recommendations for exercise, diet, sleep, stress, hydration, alcohol, and smoking.
-- SQLite database with patient records, health records, and predictions.
-- Interactive dashboard, analytics page, and searchable patient history.
-- Synthetic healthcare dataset generator with 5000 realistic records.
+> ⚠️ **EDUCATIONAL MEDICAL DISCLAIMER**: Medi-Guard AI is an academic demonstration software prototype. It is **not** a certified medical device and must **not** be used for medical diagnosis, treatment decisions, or clinical triage. Consult a licensed healthcare provider for clinical medical advice.
 
-## Project Structure
+---
+
+## 🔑 Key Features
+
+- **Educational Health Scoring**: Calculates a weighted score from 0 to 100 across physiological vitals and lifestyle habits.
+- **Experimental Lifestyle Age Estimate**: Approximates biological lifestyle impact relative to chronological age.
+- **Machine Learning Disease Risk Forecasting**: Random Forest and Logistic Regression classifiers predicting Diabetes, Heart Disease, Hypertension, and Obesity risks.
+- **2-Step PDF Report Parser**: Upload digital clinical PDFs, review extracted vitals, and apply them to the assessment form with explicit user confirmation.
+- **Smart Educational Priority Triage**: Priority alert system (Green, Yellow, Orange, Red) with emergency safety notices.
+- **Interactive What-If Lifestyle Simulator**: Dynamic side-by-side comparison of baseline habits versus simulated lifestyle adjustments.
+- **Privacy & Record Control**: Session data privacy controls and database record deletion capabilities.
+- **Escaped PDF Report Export**: Generates ReportLab PDF reports with XML text escaping and non-clinical disclaimers.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Frontend & Navigation**: Streamlit (Multi-page architecture with custom tabs)
+- **Machine Learning**: Scikit-Learn (Random Forest, Logistic Regression, ColumnTransformer, StandardScaler, OneHotEncoder)
+- **Data & Visualizations**: Pandas, NumPy, Plotly
+- **Database & Persistence**: SQLite3
+- **PDF Processing**: ReportLab, PyPDF
+- **Testing**: Pytest
+
+---
+
+## 📁 Repository Structure
 
 ```text
-medi_guard_ai/
-  app.py
-  train_model.py
-  requirements.txt
-  README.md
-  PROJECT_REPORT.md
-  database/
-    database.db
-  datasets/
-    healthcare_dataset.csv
-  models/
-    risk_prediction_model.pkl
-  utils/
-    preprocessing.py
-    health_score.py
-    health_age.py
-    risk_predictor.py
-    triage.py
-    recommendation_engine.py
-    database.py
-  pages/
-    dashboard.py
-    history.py
-    analytics.py
-  assets/
+medi-guard-ai/
+├── app.py                      # Main Streamlit application entry point
+├── train_model.py              # Machine learning training pipeline & synthetic dataset generator
+├── requirements.txt            # Pinned project dependencies
+├── README.md                   # Project documentation & overview
+├── .env.example                # Environment variable configuration template
+├── datasets/
+│   └── healthcare_dataset.csv  # 5,000 synthetic patient records
+├── models/
+│   └── risk_prediction_model.pkl # Trained Scikit-learn model bundle (cached via @st.cache_resource)
+├── database/
+│   └── database.db             # SQLite storage (patients, health_records, predictions)
+├── utils/
+│   ├── validation.py           # Centralized health profile input validation
+│   ├── database.py             # Parameterized database access layer & record deletion
+│   ├── health_score.py         # Weighted educational health score calculator
+│   ├── health_age.py           # Lifestyle age estimate rules
+│   ├── risk_predictor.py       # Cached model inference module
+│   ├── triage.py               # Priority triage heuristics & emergency alerts
+│   ├── recommendation_engine.py# Dynamic educational recommendations
+│   ├── pdf_generator.py        # ReportLab PDF generator with XML escaping
+│   ├── pdf_parser.py           # PyPDF parser for health report auto-fill
+│   ├── preprocessing.py        # HealthProfile dataclass & feature engineering
+│   └── styles.py               # Modern healthcare UI CSS theme & Plotly template
+├── pages/
+│   ├── dashboard.py            # Historical metrics dashboard
+│   ├── history.py              # Searchable patient history & record deletion
+│   └── analytics.py            # Longitudinal health trend analytics
+├── tests/                      # Automated Pytest test suite (11 unit tests)
+│   ├── test_validation.py
+│   ├── test_database.py
+│   ├── test_ml_pipeline.py
+│   ├── test_pdf_generator.py
+│   └── test_security.py
+└── docs/                       # Technical documentation specifications
+    ├── PROJECT_AUDIT.md        # Codebase audit & refactoring roadmap
+    ├── ARCHITECTURE.md         # Architecture & database schema specification
+    ├── ML_METHODOLOGY.md       # Machine learning training & evaluation methodology
+    ├── PRIVACY_AND_SAFETY.md   # Privacy lifecycle & medical disclaimers
+    └── TESTING.md              # Automated test suite specification & execution logs
 ```
 
-## Installation
+---
 
-Open a terminal inside the `medi_guard_ai` folder.
+## 🚀 Quick Start Guide
+
+### 1. Installation
+Clone the repository and install dependencies:
 
 ```bash
+git clone https://github.com/vishnuharikaran/medi-guard-ai.git
+cd medi-guard-ai
 pip install -r requirements.txt
+```
+
+### 2. Train Models (Optional)
+Generate the synthetic dataset and train the Scikit-learn model bundle:
+
+```bash
 python train_model.py
+```
+
+### 3. Run Automated Tests
+Execute the pytest suite:
+
+```bash
+pytest -v
+```
+
+### 4. Launch Application
+Start the Streamlit web application:
+
+```bash
 streamlit run app.py
 ```
 
-The first command installs dependencies. The second command creates `datasets/healthcare_dataset.csv`, trains machine learning models, compares Random Forest and Logistic Regression, and saves the selected disease models to `models/risk_prediction_model.pkl`. The third command starts the local Streamlit app.
+---
 
-## Database
+## 📊 Machine Learning Model Performance
 
-The app uses SQLite at `database/database.db`. It creates the following tables automatically:
+Models are evaluated on a 20% holdout test set across accuracy, precision, recall, F1 score, sensitivity, specificity, and ROC-AUC:
 
-- `patients`
-- `health_records`
-- `predictions`
+| Disease Target | Selected Model | F1 Score | Accuracy | ROC-AUC |
+| :--- | :--- | :--- | :--- | :--- |
+| **Diabetes** | Logistic Regression | 0.7486 | 0.7420 | 0.8124 |
+| **Heart Disease** | Logistic Regression | 0.5145 | 0.6380 | 0.6912 |
+| **Hypertension** | Random Forest | 0.9189 | 0.9230 | 0.9745 |
+| **Obesity** | Random Forest | 0.7403 | 0.8840 | 0.9102 |
 
-Every submitted assessment is stored for later dashboard, history, and analytics views.
+---
 
-## Machine Learning Pipeline
+## 🛡️ Security & Privacy
 
-1. Generate or load a 5000-row synthetic healthcare dataset.
-2. Engineer BMI and lifestyle-health features.
-3. Train/test split with stratification for each disease target.
-4. Train Random Forest and Logistic Regression pipelines.
-5. Preprocess numeric features with `StandardScaler`.
-6. Encode categorical features with `OneHotEncoder`.
-7. Evaluate with Accuracy, Precision, Recall, and F1 Score.
-8. Select the best model per disease using F1 Score.
-9. Save the model bundle with Joblib.
-
-## Important Note
-
-MediGuard AI is an educational preventive screening project. It is not a medical device and must not be used as a replacement for professional medical advice, diagnosis, or treatment.
-
+- **Input Validation**: Centralized validation in `utils/validation.py` checking numeric boundaries and Systolic > Diastolic blood pressure.
+- **XSS & XML Escaping**: User inputs are escaped (`html.escape`) before rendering in HTML containers or ReportLab PDF paragraphs.
+- **Data Ownership**: Record deletion tools (`delete_record`, `delete_all_records`) allow users to purge stored records on demand.

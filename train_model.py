@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -135,12 +135,22 @@ def build_preprocessor() -> ColumnTransformer:
     )
 
 
-def evaluate(y_true, y_pred) -> dict:
+def evaluate(y_true, y_pred, y_prob=None) -> dict:
+    cm = confusion_matrix(y_true, y_pred)
+    tn, fp, fn, tp = cm.ravel() if cm.size == 4 else (0, 0, 0, 0)
+    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+    roc_auc = round(roc_auc_score(y_true, y_prob), 4) if y_prob is not None else 0.0
+
     return {
         "accuracy": round(accuracy_score(y_true, y_pred), 4),
         "precision": round(precision_score(y_true, y_pred, zero_division=0), 4),
         "recall": round(recall_score(y_true, y_pred, zero_division=0), 4),
         "f1": round(f1_score(y_true, y_pred, zero_division=0), 4),
+        "roc_auc": roc_auc,
+        "sensitivity": round(sensitivity, 4),
+        "specificity": round(specificity, 4),
+        "confusion_matrix": cm.tolist(),
     }
 
 
@@ -186,7 +196,8 @@ def train() -> dict:
             )
             pipeline.fit(X_train, y_train)
             predictions = pipeline.predict(X_test)
-            candidate_metrics = evaluate(y_test, predictions)
+            probs = pipeline.predict_proba(X_test)[:, 1] if hasattr(pipeline, "predict_proba") else None
+            candidate_metrics = evaluate(y_test, predictions, probs)
             disease_metrics[name] = candidate_metrics
             if candidate_metrics["f1"] > best_f1:
                 best_f1 = candidate_metrics["f1"]

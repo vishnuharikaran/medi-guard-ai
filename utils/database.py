@@ -180,6 +180,36 @@ def load_prediction_history() -> pd.DataFrame:
         return pd.read_sql_query(query, conn)
 
 
+def delete_record(record_id: int) -> bool:
+    """Deletes a health record and its associated predictions and patient data."""
+    init_db()
+    with get_connection() as conn:
+        cursor = conn.execute("SELECT patient_id FROM health_records WHERE id = ?", (record_id,))
+        row = cursor.fetchone()
+        if not row:
+            return False
+        patient_id = row["patient_id"]
+        conn.execute("DELETE FROM predictions WHERE record_id = ?", (record_id,))
+        conn.execute("DELETE FROM health_records WHERE id = ?", (record_id,))
+        # Check if patient has any remaining records; if not, delete patient entry
+        remaining = conn.execute("SELECT COUNT(*) as count FROM health_records WHERE patient_id = ?", (patient_id,)).fetchone()
+        if remaining["count"] == 0:
+            conn.execute("DELETE FROM patients WHERE id = ?", (patient_id,))
+        conn.commit()
+    return True
+
+
+def delete_all_records() -> bool:
+    """Deletes all patient, health record, and prediction entries from the database."""
+    init_db()
+    with get_connection() as conn:
+        conn.execute("DELETE FROM predictions")
+        conn.execute("DELETE FROM health_records")
+        conn.execute("DELETE FROM patients")
+        conn.commit()
+    return True
+
+
 def export_record_json(record_id: int) -> str:
     with get_connection() as conn:
         rows = conn.execute("SELECT * FROM predictions WHERE record_id = ?", (record_id,)).fetchall()
